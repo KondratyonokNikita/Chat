@@ -1,7 +1,7 @@
 package com.up.controller;
 
 import com.up.model.User;
-import com.up.repository.UserRepository;
+import com.up.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,17 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class UserController {
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @GetMapping("/add")
-    public void addUser(@RequestParam String name) {
+    public String addUser(@RequestParam String name) {
         User user = new User();
         user.setName(name);
-        userRepository.save(user);
+        userService.create(user);
+        return "saved";
     }
 
     @GetMapping("/all")
     public Iterable<User> showUsers() {
-        return userRepository.findAll();
+        return userService.findAll();
     }
 }

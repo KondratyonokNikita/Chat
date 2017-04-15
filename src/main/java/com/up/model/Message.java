@@ -1,12 +1,13 @@
 package com.up.model;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 /**
  * Created by Samsung on 15.04.2017.
  */
 @Entity
-@Table(name = "massages")
+@Table(name = "messages")
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +15,16 @@ public class Message {
 
     private String text;
     private String user;
+
+    private LocalDateTime created;
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
 
     public String getUser() {
         return user;
