@@ -25,6 +25,7 @@ public class ChatPanel extends UpdatablePanel implements ActionListener {
         add(sbChat, BorderLayout.CENTER);
 
         tfMessage = new JTextField();
+        tfMessage.setEnabled(false);
         tfMessage.addActionListener(this);
         tfMessage.setActionCommand("message");
         JScrollPane sbMessage = new JScrollPane(tfMessage);
@@ -36,10 +37,12 @@ public class ChatPanel extends UpdatablePanel implements ActionListener {
 
     public void start() {
         timer.start();
+        tfMessage.setEnabled(true);
     }
 
     public void stop() {
         timer.stop();
+        tfMessage.setEnabled(false);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -51,6 +54,7 @@ public class ChatPanel extends UpdatablePanel implements ActionListener {
 
     private void sendMessage(String text) {
         session.sendMessage(text);
+        tfMessage.setText("");
     }
 
     public void update() {

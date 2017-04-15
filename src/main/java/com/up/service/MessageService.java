@@ -25,7 +25,6 @@ public class MessageService {
     }
 
     public Iterable<Message> findAllAfter(Long after) {
-        System.out.println("find all after " + after.toString());
         return this.messageRepository.findAllByCreatedGreaterThan(after);
     }
 

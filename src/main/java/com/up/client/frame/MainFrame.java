@@ -9,6 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * Created by Samsung on 15.04.2017.
@@ -20,7 +22,12 @@ public class MainFrame extends JFrame implements ActionListener {
 
     public MainFrame() {
         super("Chat");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                exit();
+            }
+        });
         session = new Session();
         initMenu();
         initChat();
@@ -85,6 +92,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private void exit() {
         int resp = JOptionPane.showConfirmDialog(this, "Do you really want to exit?");
         if(resp == JOptionPane.OK_OPTION) {
+            session.logout();
             System.exit(0);
         }
     }
@@ -110,12 +118,12 @@ public class MainFrame extends JFrame implements ActionListener {
     private void logout() {
         int resp = JOptionPane.showConfirmDialog(this, "Do you really want to logout?");
         if(resp == JOptionPane.OK_OPTION) {
+            chatPanel.stop();
+            usersPanel.stop();
             session.logout();
             menuLogin.setEnabled(true);
             menuLogout.setEnabled(false);
             menuUpdate.setEnabled(false);
-            chatPanel.stop();
-            usersPanel.stop();
             this.update();
         }
     }

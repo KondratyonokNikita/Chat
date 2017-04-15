@@ -25,6 +25,11 @@ public class UserController {
         return "saved";
     }
 
+    @GetMapping("/remove")
+    public void removeUser(@RequestParam String name) {
+        userService.delete(name);
+    }
+
     @GetMapping("/all")
     public Iterable<User> showUsers() {
         return userService.findAll();

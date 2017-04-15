@@ -34,6 +34,11 @@ public class UserService {
     }
 
     @Transactional
+    public void delete(String name) {
+        userRepository.deleteByName(name);
+    }
+
+    @Transactional
     public void update(User user) {
         User entity = this.userRepository.findOne(user.getId());
 

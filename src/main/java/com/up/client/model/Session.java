@@ -17,20 +17,17 @@ import java.util.HashMap;
  * Created by Samsung on 15.04.2017.
  */
 public class Session {
-    private boolean opened;
     private String user;
     private LocalDateTime last;
 
     public Session() {
         user = null;
         last = LocalDateTime.MIN;
-        opened = false;
     }
 
     public void login(String name) {
         try {
             URL url = new URL("http://localhost:8080/user/add?name=" + URLEncoder.encode(name, "UTF-8"));
-            System.out.println(url.toString());
             URLConnection api = url.openConnection();
             api.connect();
             BufferedReader in = new BufferedReader(new InputStreamReader(api.getInputStream()));
@@ -40,8 +37,6 @@ public class Session {
             }
             user = name;
             last = LocalDateTime.now();
-            opened = true;
-            System.out.println("Login: " + user + LocalDateTime.now().toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -50,18 +45,27 @@ public class Session {
     }
 
     public void logout() {
-        System.out.println("Logout: " + user + LocalDateTime.now().toString());
-        user = null;
+        try {
+            URL url = new URL("http://localhost:8080/user/remove?name=" + URLEncoder.encode(user, "UTF-8"));
+            URLConnection api = url.openConnection();
+            api.connect();
+            api.getInputStream();
+            user = null;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendMessage(String message) {
-        System.out.println("send message");
         try {
             URL url = new URL("http://localhost:8080/message/add?name=" +
                     URLEncoder.encode(this.user, "UTF-8") + "&text=" +
                     URLEncoder.encode(message, "UTF-8"));
             URLConnection api = url.openConnection();
             api.connect();
+            api.getInputStream();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -70,7 +74,6 @@ public class Session {
     }
 
     public ArrayList<HashMap<String, String>> getNewMessages() {
-        System.out.println("get new messages: " + LocalDateTime.now().toString());
         try {
             URL url = new URL("http://localhost:8080/message/all/after?after=" +
                     URLEncoder.encode(String.valueOf(Helper.toMillis(last)), "UTF-8"));
@@ -88,7 +91,6 @@ public class Session {
     }
 
     public ArrayList<String> getUsers() {
-        System.out.println("Get users: " + LocalDateTime.now().toString());
         try {
             URL url = new URL("http://localhost:8080/user/all");
             URLConnection api = url.openConnection();
@@ -140,14 +142,6 @@ public class Session {
             last = Helper.toLocalDateTime(Long.parseLong(messageMap.get("\"created\"")));
         }
         return res;
-    }
-
-    public boolean isOpened() {
-        return opened;
-    }
-
-    public void setOpened(boolean opened) {
-        this.opened = opened;
     }
 
     public String getUser() {
