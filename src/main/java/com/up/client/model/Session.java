@@ -30,11 +30,7 @@ public class Session {
             URL url = new URL("http://localhost:8080/user/add?name=" + URLEncoder.encode(name, "UTF-8"));
             URLConnection api = url.openConnection();
             api.connect();
-            BufferedReader in = new BufferedReader(new InputStreamReader(api.getInputStream()));
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                System.out.println(inputLine);
-            }
+            api.getInputStream();
             user = name;
             last = LocalDateTime.now();
         } catch (MalformedURLException e) {

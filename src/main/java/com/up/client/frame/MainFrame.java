@@ -32,7 +32,8 @@ public class MainFrame extends JFrame implements ActionListener {
         initMenu();
         initChat();
         initUsers();
-        setSize(300, 400);
+        setSize(600, 600);
+        setResizable(false);
         setVisible(true);
     }
 
