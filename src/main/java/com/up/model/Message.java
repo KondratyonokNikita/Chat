@@ -1,7 +1,6 @@
 package com.up.model;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 /**
  * Created by Samsung on 15.04.2017.
@@ -16,13 +15,13 @@ public class Message {
     private String text;
     private String user;
 
-    private LocalDateTime created;
+    private Long created;
 
-    public LocalDateTime getCreated() {
+    public Long getCreated() {
         return created;
     }
 
-    public void setCreated(LocalDateTime created) {
+    public void setCreated(Long created) {
         this.created = created;
     }
 

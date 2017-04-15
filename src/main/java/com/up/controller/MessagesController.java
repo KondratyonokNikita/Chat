@@ -1,5 +1,6 @@
 package com.up.controller;
 
+import com.up.helper.Helper;
 import com.up.model.Message;
 import com.up.repository.UserRepository;
 import com.up.service.MessageService;
@@ -28,13 +29,17 @@ public class MessagesController {
         Message message = new Message();
         message.setUser(name);
         message.setText(text);
-        message.setCreated(LocalDateTime.now());
+        message.setCreated(Helper.toMillis(LocalDateTime.now()));
         messageService.create(message);
     }
 
     @GetMapping("/all")
     public Iterable<Message> showMessages() {
-        System.out.println("get all messages");
         return messageService.findAll();
+    }
+
+    @GetMapping("/all/after")
+    public Iterable<Message> showMessagesAfter(@RequestParam Long after) {
+        return messageService.findAllAfter(after);
     }
 }

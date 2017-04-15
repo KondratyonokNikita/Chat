@@ -6,8 +6,6 @@ import com.up.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 /**
  * Created by Samsung on 15.04.2017.
  */
@@ -22,8 +20,13 @@ public class MessageService {
         this.messageRepository = messageRepository;
     }
 
-    public List<Message> findAll() {
+    public Iterable<Message> findAll() {
         return this.messageRepository.findAll();
+    }
+
+    public Iterable<Message> findAllAfter(Long after) {
+        System.out.println("find all after " + after.toString());
+        return this.messageRepository.findAllByCreatedGreaterThan(after);
     }
 
     @Transactional
