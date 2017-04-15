@@ -2,7 +2,6 @@ package com.up.client.model;
 
 import com.up.helper.Helper;
 
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -55,24 +54,14 @@ public class Session {
         user = null;
     }
 
-    public void update(JTextArea textArea) {
-        System.out.println("Update: " + LocalDateTime.now().toString());
+    public void sendMessage(String message) {
+        System.out.println("send message");
         try {
-            URL url = new URL("http://localhost:8080/message/all/after?after=" +
-                    URLEncoder.encode(String.valueOf(Helper.toMillis(last)), "UTF-8"));
+            URL url = new URL("http://localhost:8080/message/add?name=" +
+                    URLEncoder.encode(this.user, "UTF-8") + "&text=" +
+                    URLEncoder.encode(message, "UTF-8"));
             URLConnection api = url.openConnection();
             api.connect();
-            BufferedReader in = new BufferedReader(new InputStreamReader(api.getInputStream()));
-            String inputLine = in.readLine();
-            ArrayList<HashMap<String, String>> messages = JSONParseMessages(inputLine);
-            for(HashMap<String, String> message: messages) {
-                textArea.append("===========\n");
-                textArea.append("From: " + message.get("\"user\"") + "\n");
-                textArea.append("===========\n");
-                textArea.append(message.get("\"text\"") + "\n");
-                textArea.append("===========\n");
-                last = Helper.toLocalDateTime(Long.parseLong(message.get("\"created\"")));
-            }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -80,16 +69,67 @@ public class Session {
         }
     }
 
-    private ArrayList<HashMap<String, String>> JSONParseMessages(String input) {
-        ArrayList<HashMap<String, String>> res = new ArrayList<>();
-        if("[]".equals(input))
-            return res;
+    public ArrayList<HashMap<String, String>> getNewMessages() {
+        System.out.println("get new messages: " + LocalDateTime.now().toString());
+        try {
+            URL url = new URL("http://localhost:8080/message/all/after?after=" +
+                    URLEncoder.encode(String.valueOf(Helper.toMillis(last)), "UTF-8"));
+            URLConnection api = url.openConnection();
+            api.connect();
+            BufferedReader in = new BufferedReader(new InputStreamReader(api.getInputStream()));
+            String inputLine = in.readLine();
+            return JSONParseMessages(inputLine);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    public ArrayList<String> getUsers() {
+        System.out.println("Get users: " + LocalDateTime.now().toString());
+        try {
+            URL url = new URL("http://localhost:8080/user/all");
+            URLConnection api = url.openConnection();
+            api.connect();
+            BufferedReader in = new BufferedReader(new InputStreamReader(api.getInputStream()));
+            String inputLine = in.readLine();
+            return JSONParseUsers(inputLine);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    private String normalize(String input) {
         input = input.replace("[{", "");
         input = input.replace("}]", "");
         input = input.replace("[", "");
         input = input.replace("]", "");
         input = input.replace("}", "-");
         input = input.replace("{", "-");
+        return input;
+    }
+
+    private ArrayList<String> JSONParseUsers(String input) {
+        ArrayList<String> res = new ArrayList<>();
+        if("[]".equals(input))
+            return res;
+        input = normalize(input);
+        for(String userStr: input.split("-,-")) {
+            res.add(userStr.split(",")[1].split(":")[1].replace("\"", ""));
+        }
+        return res;
+    }
+
+    private ArrayList<HashMap<String, String>> JSONParseMessages(String input) {
+        ArrayList<HashMap<String, String>> res = new ArrayList<>();
+        if("[]".equals(input))
+            return res;
+        input = normalize(input);
         for(String messageStr: input.split("-,-")) {
             HashMap<String, String> messageMap = new HashMap<>();
             for(String pair: messageStr.split(",")) {
@@ -97,6 +137,7 @@ public class Session {
                 messageMap.put(parts[0], parts[1]);
             }
             res.add(messageMap);
+            last = Helper.toLocalDateTime(Long.parseLong(messageMap.get("\"created\"")));
         }
         return res;
     }

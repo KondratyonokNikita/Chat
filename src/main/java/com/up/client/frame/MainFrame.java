@@ -1,6 +1,9 @@
 package com.up.client.frame;
 
 import com.up.client.model.Session;
+import com.up.client.panel.ChatPanel;
+import com.up.client.panel.UpdatablePanel;
+import com.up.client.panel.UsersPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,8 +16,7 @@ import java.awt.event.ActionListener;
 public class MainFrame extends JFrame implements ActionListener {
     private Session session;
     private JMenuItem menuLogin, menuLogout, menuUpdate, menuExit;
-    private JTextArea taChat, taMessage;
-    private JLabel lUser;
+    private UpdatablePanel chatPanel, usersPanel;
 
     public MainFrame() {
         super("Chat");
@@ -22,7 +24,8 @@ public class MainFrame extends JFrame implements ActionListener {
         session = new Session();
         initMenu();
         initChat();
-        pack();
+        initUsers();
+        setSize(300, 400);
         setVisible(true);
     }
 
@@ -61,17 +64,13 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     private void initChat() {
-        taChat = new JTextArea();
-        taChat.setEditable(false);
-        JScrollPane sbChat = new JScrollPane(taChat);
-        getContentPane().add(sbChat, BorderLayout.CENTER);
+        chatPanel = new ChatPanel(session);
+        getContentPane().add(chatPanel, BorderLayout.CENTER);
+    }
 
-        taMessage = new JTextArea();
-        JScrollPane sbMessage = new JScrollPane(taMessage);
-        getContentPane().add(sbMessage, BorderLayout.SOUTH);
-
-        lUser = new JLabel("You are " + session.getUser());
-        getContentPane().add(lUser, BorderLayout.NORTH);
+    private void initUsers() {
+        usersPanel = new UsersPanel(session);
+        getContentPane().add(usersPanel, BorderLayout.EAST);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -91,7 +90,8 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     private void update() {
-        session.update(taChat);
+        chatPanel.update();
+        usersPanel.update();
     }
 
     private void login() {
@@ -101,7 +101,9 @@ public class MainFrame extends JFrame implements ActionListener {
             menuLogin.setEnabled(false);
             menuLogout.setEnabled(true);
             menuUpdate.setEnabled(true);
-            lUser.setText("You are: " + session.getUser());
+            chatPanel.start();
+            usersPanel.start();
+            this.update();
         }
     }
 
@@ -112,7 +114,9 @@ public class MainFrame extends JFrame implements ActionListener {
             menuLogin.setEnabled(true);
             menuLogout.setEnabled(false);
             menuUpdate.setEnabled(false);
-            lUser.setText("You are: " + session.getUser());
+            chatPanel.stop();
+            usersPanel.stop();
+            this.update();
         }
     }
 }
